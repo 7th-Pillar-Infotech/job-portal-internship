@@ -9,54 +9,54 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import "./Login.css";
 import swal from "sweetalert";
+import { loginValidation } from "../validations/loginValidation";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const regex = /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [loginFormError, setLoginFormError] = useState({});
   const [loginFirebaseError, setLoginFirebaseError] = useState({});
 
-  const loginButtonHandler = () => {
-    setLoginFirebaseError({});
-    if (email.trim().length == 0) {
-      setLoginFormError((prevState) => ({
-        ...prevState,
-        ["emailIsBlank"]: true,
-        ["emailIsInvalid"]: false,
-      }));
-    } else if (!regex.test(email)) {
-      setLoginFormError((prevState) => ({
-        ...prevState,
-        ["emailIsInvalid"]: true,
-        ["emailIsBlank"]: false,
-      }));
-    } else {
-      setLoginFormError((prevState) => ({
-        ...prevState,
-        ["emailIsInvalid"]: false,
-        ["emailIsBlank"]: false,
-      }));
-    }
+  const loginFormValidationsHandler = async () => {
+    setLoginFormError({});
+    let loginFormData = {
+      email,
+      password,
+    };
+    const output = await loginValidation(loginFormData);
+    if (typeof output == "object" && output != null) {
+      if (output.emailIsBlank) {
+        setLoginFormError((prevState) => ({
+          ...prevState,
+          ["emailIsBlank"]: true,
+        }));
+      } else if (output.emailInvalid) {
+        setLoginFormError((prevState) => ({
+          ...prevState,
+          ["emailIsInvalid"]: true,
+        }));
+      }
 
-    if (password.trim().length == 0) {
-      setLoginFormError((prevState) => ({
-        ...prevState,
-        ["passwordIsBlank"]: true,
-      }));
-    } else {
-      setLoginFormError((prevState) => ({
-        ...prevState,
-        ["passwordIsBlank"]: false,
-      }));
-    }
-    if (
-      email.trim().length != 0 &&
-      regex.test(email) &&
-      password.trim().length != 0
-    ) {
+      if (output.passwordIsBlank) {
+        setLoginFormError((prevState) => ({
+          ...prevState,
+          ["passwordIsBlank"]: true,
+        }));
+      } else if (output.passwordIsShort) {
+        setLoginFormError((prevState) => ({
+          ...prevState,
+          ["passwordIsShort"]: true,
+        }));
+      }
+    } else return output;
+  };
+
+  const loginButtonHandler = async () => {
+    setLoginFirebaseError({});
+    const res = await loginFormValidationsHandler();
+    if (res === "validationsPassed") {
       setIsLoading(true);
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
@@ -170,6 +170,10 @@ function Login() {
               <p className="login-error">* Password is blank</p>
             )}
 
+            {loginFormError.passwordIsShort && (
+              <p className="login-error">* Minimum length of password is 6</p>
+            )}
+
             {loginFirebaseError.passwordIsWrong && (
               <p className="login-error">Password is wrong</p>
             )}
@@ -180,6 +184,7 @@ function Login() {
             )}
             <Button
               onClick={loginButtonHandler}
+              // onClick={loginFormValidationsHandler}
               variant="outlined"
               color="success"
               style={{

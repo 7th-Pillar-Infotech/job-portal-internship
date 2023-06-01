@@ -8,6 +8,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import swal from "sweetalert";
+import { signupValidation } from "../validations/signupValidation";
 
 function Signup() {
   const [email, setEmail] = useState("");
@@ -19,61 +20,50 @@ function Signup() {
   const [signupFormError, setSignupFormError] = useState({});
   const [signupFirebaseError, setSignupFirebaseError] = useState({});
 
-  const signupButtonHandler = () => {
+  const signupFormValidationsHandler = async () => {
+    setSignupFormError({});
+    let signupFormData = {
+      email,
+      password,
+      confirmPassword,
+    };
+    const output = await signupValidation(signupFormData);
+    if (typeof output == "object" && output != null) {
+      if (output.emailIsBlank) {
+        setSignupFormError((prevState) => ({
+          ...prevState,
+          ["emailIsBlank"]: true,
+        }));
+      } else if (output.emailInvalid) {
+        setSignupFormError((prevState) => ({
+          ...prevState,
+          ["emailIsInvalid"]: true,
+        }));
+      }
+
+      if (output.passwordIsBlank) {
+        setSignupFormError((prevState) => ({
+          ...prevState,
+          ["passwordIsBlank"]: true,
+        }));
+      } else if (output.passwordIsShort) {
+        setSignupFormError((prevState) => ({
+          ...prevState,
+          ["passwordIsShort"]: true,
+        }));
+      } else if (output.passwordsNotSame) {
+        setSignupFormError((prevState) => ({
+          ...prevState,
+          ["passwordsNotSame"]: true,
+        }));
+      }
+    } else return output;
+  };
+
+  const signupButtonHandler = async () => {
     setSignupFirebaseError({});
-    if (email.trim().length == 0) {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["emailIsBlank"]: true,
-        ["emailIsInvalid"]: false,
-      }));
-    } else if (!regex.test(email)) {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["emailIsBlank"]: false,
-        ["emailIsInvalid"]: true,
-      }));
-    } else {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["emailIsBlank"]: false,
-        ["emailIsInvalid"]: false,
-      }));
-    }
-
-    if (password.trim().length == 0) {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["passwordIsBlank"]: true,
-      }));
-    } else if (password.trim().length < 6) {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["passwordIsShort"]: true,
-        ["passwordIsBlank"]: false,
-      }));
-    } else if (password != confirmPassword) {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["passwordsNotSame"]: true,
-        ["passwordIsShort"]: false,
-        ["passwordIsBlank"]: false,
-      }));
-    } else {
-      setSignupFormError((prevState) => ({
-        ...prevState,
-        ["passwordIsBlank"]: false,
-        ["passwordIsShort"]: false,
-        ["passwordsNotSame"]: false,
-      }));
-    }
-
-    if (
-      email.trim().length != 0 &&
-      regex.test(email) &&
-      password.trim().length > 5 &&
-      password == confirmPassword
-    ) {
+    const res = await signupFormValidationsHandler();
+    if (res === "validationsPassed") {
       setIsLoading(true);
       const auth = getAuth();
       createUserWithEmailAndPassword(auth, email, password)
