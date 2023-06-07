@@ -11,18 +11,16 @@ import swal from "sweetalert";
 import LoadingBackdrop from "../components/LoadingBackdrop/LoadingBackdrop";
 import Modal from "@mui/material/Modal";
 import JobApplicationForm from "../components/JobApplicationForm/JobApplicationForm";
+import notLoggedMessage from "../constants/notLoggedin.constant";
 
 function ListingSelected(props) {
-  // console.log(props);
   const listingSelected = useSelector(
     (state) => state.listings.listingSelected
   );
 
   const jobId = listingSelected ? listingSelected.jobId : console.log("error");
 
-  // console.log(jobId);
   const { email } = useSelector((state) => state.user);
-  // console.log(email.length);
   const { uid } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [showApplicationForm, setShowApplicationForm] = useState(false);
@@ -72,8 +70,8 @@ function ListingSelected(props) {
   const applyButtonHandler = () => {
     if (email.length == 0) {
       swal(
-        "Not logged in",
-        "Login is required. Please login and apply",
+        notLoggedMessage.title,
+        notLoggedMessage.message,
         "error"
       ).then(() => navigate("/"));
     } else {

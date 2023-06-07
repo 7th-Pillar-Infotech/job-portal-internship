@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./SearchBar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { jobListings } from "../features/jobListingsSlice";
 import { jobSearch } from "../features/searchSlice";
 import { jobSearchWord } from "../features/searchWordSlice";
 

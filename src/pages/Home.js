@@ -18,13 +18,6 @@ import Login from "../components/Login";
 import { makeStyles } from "@mui/material/styles";
 
 export function HomePage(props) {
-  //   const useStyles = makeStyles((theme) => ({
-  //     homepage-grid-last-item: {
-  //       [theme.breakpoints.down('lg')]: {
-  //         color: 'orange',
-  //       },
-  //    }
-  //  }))
   return (
     <>
       <NavBar />

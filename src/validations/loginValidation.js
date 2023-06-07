@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { arrayToObject } from "./arrayToObject.util";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("emailInvalid").required("emailIsBlank"),
@@ -12,9 +13,7 @@ export const loginValidation = async (loginFormData) => {
     });
     return "validationsPassed";
   } catch (error) {
-    let errorObject = {};
-    error.errors.forEach((i) => (errorObject[i] = true));
-    console.log(errorObject);
+    const errorObject = await arrayToObject(error.errors);
     return errorObject;
   }
 };

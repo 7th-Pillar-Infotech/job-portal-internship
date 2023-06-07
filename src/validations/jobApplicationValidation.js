@@ -1,25 +1,28 @@
 import * as Yup from "yup";
+import { arrayToObject } from "./arrayToObject.util";
 
 const jobApplicationSchema = Yup.object().shape({
   fullName: Yup.string().required("fullNameIsBlank"),
-  age: Yup.string().moreThan(17, "ageIsInvalid").required("ageIsBlank"),
+  age: Yup.number("ageIsInvalid")
+    .typeError("ageIsInvalid")
+    .moreThan(17, "ageIsInvalid")
+    .required("ageIsBlank"),
   qualification: Yup.string().required("qualificationIsBlank"),
-  experience: Yup.string()
+  experience: Yup.number("experienceIsInvalid")
+    .typeError("experienceIsInvalid")
     .required("experienceIsBlank")
-    .moreThan(0, "experienceIsInvalid"),
-  resumeFile: Yup.string().required("resumeIsBlank"),
+    .moreThan(-1, "experienceIsInvalid"),
 });
 
 export const jobApplicationValidation = async (jobApplicationFormData) => {
+  console.log(jobApplicationFormData);
   try {
     await jobApplicationSchema.validate(jobApplicationFormData, {
       abortEarly: false,
     });
     return "validationsPassed";
   } catch (error) {
-    let errorObject = {};
-    error.errors.forEach((i) => (errorObject[i] = true));
-    console.log(errorObject);
+    const errorObject = await arrayToObject(error.errors);
     return errorObject;
   }
 };

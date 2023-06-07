@@ -16,15 +16,6 @@ import { reset, signin } from "../features/loggedInUserSlice";
 import logo from "../assets/images/logoNavbar.png";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { Button, Grid } from "@mui/material";
-// import { makeStyles } from "@mui/styles";
-
-// const useStyles = makeStyles((theme) => ({
-//   title: {
-//     [theme.breakpoints.down("sm")]: {
-//       display: "none",
-//     },
-//   },
-// }));
 
 export function NavBarUser(props) {
   const dispatch = useDispatch();
@@ -33,7 +24,6 @@ export function NavBarUser(props) {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const { email, uid } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  // const classes = useStyles();
 
   const handleMenu = () => {
     setviewUserDetails(!viewUserDetails);

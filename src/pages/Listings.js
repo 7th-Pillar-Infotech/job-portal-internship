@@ -14,17 +14,12 @@ import {
   collection,
   doc,
   setDoc,
-  updateDoc,
   getDocs,
   query,
   where,
   getDoc,
-  arrayUnion,
-  arrayRemove,
 } from "firebase/firestore";
 import LoadingBackdrop from "../components/LoadingBackdrop/LoadingBackdrop";
-import StarOutlineIcon from "@mui/icons-material/StarOutline";
-import StarIcon from "@mui/icons-material/Star";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
@@ -32,10 +27,6 @@ function Listings() {
   const { email } = useSelector((state) => state.user);
   const { uid } = useSelector((state) => state.user);
   const { listings } = useSelector((state) => state.listings);
-  // const [listingsNew, setListings] = useState(
-  //   useSelector((state) => state.listings.listings)
-  // );
-  // console.log(listingsNew);
 
   const { searchResult } = useSelector((state) => state.search);
   const { searchWord } = useSelector((state) => state.searchWord);
@@ -91,8 +82,6 @@ function Listings() {
     //first check whether user is having favorites list
     const jobPortalExistingFavoritesRef = doc(db, "jobPortalFavorites", email);
     const docSnapshot = await getDoc(jobPortalExistingFavoritesRef);
-    console.log(docSnapshot.data().favorite.constructor === Array);
-    console.log(docSnapshot.data().favorite.length);
     if (docSnapshot.data().favorite.constructor === Array) {
       console.log("It reached here");
       setFavoritesArray(docSnapshot.data().favorite);
@@ -114,7 +103,6 @@ function Listings() {
 
   const favoriteButtonHandler = async (e) => {
     const favoriteNewJobId = e.currentTarget.value;
-    console.log(favoritesArray);
     const documentName = email;
     //if user  is already having  favorites list add to the same
     let newFavoritesArray = [];

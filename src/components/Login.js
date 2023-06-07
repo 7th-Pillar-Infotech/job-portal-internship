@@ -104,9 +104,7 @@ function Login() {
   };
 
   return (
-    <>
-      {/* second container - right part  */}
-      {/* <Grid item xs={11} md={4}> */}
+    <>       {/* second container - right part  */}
       <div>
         <Grid
           container

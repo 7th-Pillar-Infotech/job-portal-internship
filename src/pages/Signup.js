@@ -14,7 +14,6 @@ function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const regex = /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [signupFormError, setSignupFormError] = useState({});
